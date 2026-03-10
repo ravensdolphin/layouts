@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SurfPixelTV – YouTube OBS Layout</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* ── VIBRANT SPRING BG ── */
+  .bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+      #b8f0d8 0%,
+      #d4f0ff 25%,
+      #ffd6f0 55%,
+      #fff0b8 80%,
+      #b8f0d8 100%);
+    background-size: 300% 300%;
+    animation: bg-shift 8s ease-in-out infinite alternate;
+    z-index: 0;
+  }
+  @keyframes bg-shift {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .b1 { width:700px; height:700px; top:-200px; left:-150px;  background:#7de8b0; }
+  .b2 { width:600px; height:600px; bottom:-200px; right:-100px; background:#ffb3d9; }
+  .b3 { width:500px; height:500px; top:100px; right:500px;   background:#ffe08a; }
+  .b4 { width:400px; height:400px; bottom:0; left:600px;     background:#a8d8ff; }
+
+  .dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.4) 2px, transparent 2px);
+    background-size: 48px 48px;
+    z-index: 0;
+  }
+
+  /* ── GAMEPLAY — left, 16:9, fits in top-left ── */
+  /* At 1920x1080, left panel: gameplay height = 1080 - bottom strip - margins
+     Bottom strip = 200px. Gameplay area height = 880px - 40px margins = 840px
+     16:9 at 840px tall = 1493px wide — too wide. Use 1280x720 anchored top-left */
+  #gameplay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 1280px;
+    height: 720px;
+    background: #070810;
+    border-radius: 28px;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  /* Colorful glow around gameplay */
+  .gameplay-glow {
+    position: absolute;
+    top: 13px; left: 13px;
+    width: 1294px;
+    height: 734px;
+    border-radius: 32px;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow:
+      0 0 0 2px rgba(125,232,176,0.4),
+      0 0 30px rgba(125,232,176,0.2),
+      0 0 60px rgba(255,179,217,0.15);
+  }
+
+  /* Corner brackets */
+  .gc { position: absolute; width: 48px; height: 48px; z-index: 3; pointer-events: none; }
+  .gc-tl { top: 28px;  left: 28px;   border-top:3px solid rgba(125,232,176,0.9); border-left:3px solid rgba(125,232,176,0.9);   border-radius:6px 0 0 0; }
+  .gc-tr { top: 28px;  left: 1252px; border-top:3px solid rgba(255,180,220,0.9); border-right:3px solid rgba(255,180,220,0.9);  border-radius:0 6px 0 0; }
+  .gc-bl { top: 692px; left: 28px;   border-bottom:3px solid rgba(168,216,255,0.9); border-left:3px solid rgba(168,216,255,0.9); border-radius:0 0 0 6px; }
+  .gc-br { top: 692px; left: 1252px; border-bottom:3px solid rgba(255,224,138,0.9); border-right:3px solid rgba(255,224,138,0.9); border-radius:0 0 6px 0; }
+
+  /* Gaming icons inside gameplay */
+  .game-icon {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  /* ── WEBCAM — right of gameplay, transparent ── */
+  #webcam {
+    position: absolute;
+    top: 20px;
+    left: 1320px;
+    width: 580px;
+    height: 720px;
+    background: transparent;
+    border-radius: 28px;
+    z-index: 2;
+    border: 2.5px solid rgba(255,255,255,0.5);
+    overflow: hidden;
+  }
+
+  /* ── VERTICAL DIVIDER between gameplay and webcam ── */
+  .divider-v {
+    position: absolute;
+    top: 20px; left: 1308px;
+    width: 5px;
+    height: 720px;
+    background: linear-gradient(180deg, #7de8b0, #a8d8ff, #ffb3d9, #ffe08a, #7de8b0);
+    background-size: 100% 200%;
+    animation: slide-v 3s linear infinite;
+    z-index: 5;
+    border-radius: 3px;
+    box-shadow: 0 0 12px rgba(125,232,176,0.4);
+  }
+  @keyframes slide-v {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 0% 200%; }
+  }
+
+  /* ── HORIZONTAL DIVIDER above bottom strip ── */
+  .divider-h {
+    position: absolute;
+    top: 754px; left: 0;
+    width: 1920px;
+    height: 5px;
+    background: linear-gradient(90deg, #7de8b0, #a8d8ff, #ffb3d9, #ffe08a, #ff9eb0, #7de8b0);
+    background-size: 200% 100%;
+    animation: slide-h 3s linear infinite;
+    z-index: 5;
+    box-shadow: 0 0 14px rgba(125,232,176,0.4);
+  }
+  @keyframes slide-h {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  /* ── BOTTOM STRIP ── */
+  #bottom {
+    position: absolute;
+    top: 765px; left: 0;
+    width: 1920px;
+    height: 315px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+  }
+
+  /* Shared card style */
+  .card {
+    background: rgba(255,255,255,0.78);
+    border-radius: 22px;
+    border: 2.5px solid rgba(255,255,255,0.95);
+    box-shadow: 0 4px 20px rgba(100,180,120,0.1);
+    backdrop-filter: blur(14px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 20px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .card-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(50,40,100,0.32);
+  }
+
+  .card-value {
+    font-family: 'Fredoka One', cursive;
+    font-size: 52px;
+    line-height: 1;
+    color: #2d2a4a;
+    letter-spacing: -1px;
+  }
+
+  .card-sub {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(50,40,100,0.28);
+    text-transform: uppercase;
+  }
+
+  /* Clock */
+  #clock-card { width: 260px; }
+  #clock-card .card-value { color: #2d2a4a; }
+
+  /* Uptime */
+  #uptime-card { width: 300px; }
+  #uptime-card .card-value { color: #ff7eb3; font-size: 46px; }
+
+  /* EST */
+  #est-card { width: 240px; }
+  #est-card .card-value { font-size: 42px; color: #5bb8f5; }
+
+  /* ── CHAT BOX ── */
+  #chat-box {
+    flex: 1;
+    height: 100%;
+    background: rgba(255,255,255,0.78);
+    border-radius: 22px;
+    border: 2.5px solid rgba(255,255,255,0.95);
+    box-shadow: 0 4px 20px rgba(100,120,200,0.08);
+    backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px 8px;
+    border-bottom: 1.5px solid rgba(180,160,240,0.18);
+    flex-shrink: 0;
+  }
+
+  .chat-dot {
+    width: 9px; height: 9px;
+    background: #5ecf7a;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(94,207,122,0.6);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50%      { opacity:0.2; }
+  }
+
+  .chat-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: rgba(50,40,100,0.45);
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow: hidden;
+    padding: 8px 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .chat-msg {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    animation: fadein 0.3s ease;
+  }
+  @keyframes fadein {
+    from { opacity:0; transform:translateY(4px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .chat-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .chat-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: rgba(45,42,74,0.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── HANDLE CARD ── */
+  #handle-card {
+    width: 260px;
+    gap: 6px;
+  }
+
+  .handle-platform {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(50,40,100,0.32);
+  }
+
+  .handle-name {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: #2d2a4a;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .handle-divider {
+    width: 50px; height: 2px;
+    background: linear-gradient(90deg, #7de8b0, #ffb3d9);
+    border-radius: 2px;
+    margin: 2px 0;
+  }
+
+  /* Floaties */
+  .floatie {
+    position: absolute;
+    opacity: 0.48;
+    animation: drift ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 26px;
+  }
+  @keyframes drift {
+    0%   { transform: translateY(0) rotate(-5deg); }
+    100% { transform: translateY(-12px) rotate(7deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="dots"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div class="blob b4"></div>
+
+<!-- Floaties -->
+<div class="floatie" style="top:14px;  left:14px;   animation-duration:3.5s;">🌸</div>
+<div class="floatie" style="top:14px;  right:16px;  animation-duration:4.2s; animation-delay:.6s;">⭐</div>
+<div class="floatie" style="top:380px; right:20px;  animation-duration:3.2s; animation-delay:1.2s;">🍀</div>
+<div class="floatie" style="top:760px; left:14px;   animation-duration:5s;   animation-delay:1s;">🌿</div>
+<div class="floatie" style="top:760px; right:16px;  animation-duration:3.8s; animation-delay:.3s;">🌼</div>
+
+<!-- GAMEPLAY -->
+<div id="gameplay">
+  <div class="game-icon" style="top:40px;  left:60px;">🎮</div>
+  <div class="game-icon" style="top:38px;  left:300px;">⭐</div>
+  <div class="game-icon" style="top:44px;  left:560px;">🍄</div>
+  <div class="game-icon" style="top:40px;  left:820px;">🌟</div>
+  <div class="game-icon" style="top:38px;  left:1080px;">👾</div>
+  <div class="game-icon" style="top:240px; left:50px;">🕹️</div>
+  <div class="game-icon" style="top:250px; left:320px;">❤️</div>
+  <div class="game-icon" style="top:245px; left:600px;">🏆</div>
+  <div class="game-icon" style="top:248px; left:880px;">🎯</div>
+  <div class="game-icon" style="top:243px; left:1140px;">🎮</div>
+  <div class="game-icon" style="top:460px; left:70px;">🍄</div>
+  <div class="game-icon" style="top:455px; left:350px;">⭐</div>
+  <div class="game-icon" style="top:462px; left:640px;">👾</div>
+  <div class="game-icon" style="top:458px; left:920px;">💎</div>
+  <div class="game-icon" style="top:460px; left:1160px;">🌟</div>
+  <div class="game-icon" style="top:630px; left:60px;">🕹️</div>
+  <div class="game-icon" style="top:635px; left:340px;">❤️</div>
+  <div class="game-icon" style="top:632px; left:630px;">🏆</div>
+  <div class="game-icon" style="top:636px; left:920px;">🎯</div>
+  <div class="game-icon" style="top:633px; left:1180px;">🎮</div>
+</div>
+
+<div class="gameplay-glow"></div>
+
+<!-- Corner brackets -->
+<div class="gc gc-tl"></div>
+<div class="gc gc-tr"></div>
+<div class="gc gc-bl"></div>
+<div class="gc gc-br"></div>
+
+<!-- Vertical divider -->
+<div class="divider-v"></div>
+
+<!-- WEBCAM (transparent — green screen goes here in OBS) -->
+<div id="webcam"></div>
+
+<!-- Horizontal divider -->
+<div class="divider-h"></div>
+
+<!-- BOTTOM STRIP -->
+<div id="bottom">
+
+  <!-- HANDLES -->
+  <div class="card" id="handle-card">
+    <div class="handle-platform">TikTok</div>
+    <div class="handle-name">@surfpixeltv</div>
+    <div class="handle-divider"></div>
+    <div class="handle-platform">YouTube</div>
+    <div class="handle-name">ravensdolphin</div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat-box">
+    <div class="chat-header">
+      <div class="chat-dot"></div>
+      <div class="chat-title">LIVE CHAT</div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+  </div>
+
+  <!-- CLOCK -->
+  <div class="card" id="clock-card">
+    <div class="card-label">🕐 Clock</div>
+    <div class="card-value" id="clock">00:00</div>
+    <div class="card-sub" id="clock-ampm">AM · EST</div>
+  </div>
+
+  <!-- UPTIME -->
+  <div class="card" id="uptime-card">
+    <div class="card-label">⏱ Stream Time</div>
+    <div class="card-value" id="uptime">00:00:00</div>
+    <div class="card-sub">Uptime</div>
+  </div>
+
+  <!-- EST -->
+  <div class="card" id="est-card">
+    <div class="card-label">🌍 Time Zone</div>
+    <div class="card-value">EST</div>
+    <div class="card-sub">Eastern</div>
+  </div>
+
+</div>
+
+<script>
+  // ── CLOCK ──
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    document.getElementById('clock').textContent = `${String(h).padStart(2,'0')}:${m}`;
+    document.getElementById('clock-ampm').textContent = `${ampm} · EST`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ── UPTIME ──
+  const streamStart = Date.now();
+  function updateUptime() {
+    const secs = Math.floor((Date.now() - streamStart) / 1000);
+    const h = String(Math.floor(secs / 3600)).padStart(2,'0');
+    const m = String(Math.floor((secs % 3600) / 60)).padStart(2,'0');
+    const s = String(secs % 60).padStart(2,'0');
+    document.getElementById('uptime').textContent = `${h}:${m}:${s}`;
+  }
+  updateUptime();
+  setInterval(updateUptime, 1000);
+
+  // ── CHAT ──
+  const msgs = [
+    { name:'PixelFan',    text:'🎮 lets gooo!!',              color:'#ff7eb3' },
+    { name:'NightOwl',    text:'Fortnite W 🔥',               color:'#5bb8f5' },
+    { name:'StarGirl',    text:'⭐ surfpixeltv diff',          color:'#c9b8f5' },
+    { name:'RetroKing',   text:'clutch play bro no way',       color:'#ffb347' },
+    { name:'SurfWatcher', text:'ravensdolphin sub gang 🐬',    color:'#7de8b0' },
+    { name:'GameQueen',   text:'W gameplay 💥',               color:'#ff7b54' },
+    { name:'CoolViewer',  text:'new sub hello!! 👋',           color:'#ff7eb3' },
+    { name:'LateNight',   text:'bro is built diff fr fr 😤',  color:'#5bb8f5' },
+  ];
+
+  const container = document.getElementById('chat-messages');
+  let idx = 0;
+
+  function addMsg() {
+    const m = msgs[idx++ % msgs.length];
+    const row = document.createElement('div');
+    row.className = 'chat-msg';
+    const name = document.createElement('span');
+    name.className = 'chat-name';
+    name.style.color = m.color;
+    name.textContent = m.name + ':';
+    const text = document.createElement('span');
+    text.className = 'chat-text';
+    text.textContent = m.text;
+    row.appendChild(name);
+    row.appendChild(text);
+    container.appendChild(row);
+    while (container.children.length > 3) container.removeChild(container.firstChild);
+  }
+
+  setTimeout(() => addMsg(), 400);
+  setTimeout(() => addMsg(), 1200);
+  setTimeout(() => addMsg(), 2200);
+  setInterval(addMsg, 4000);
+</script>
+
+</body>
+</html>
